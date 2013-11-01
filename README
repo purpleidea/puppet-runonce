@@ -11,6 +11,7 @@ Module specific notes:
 * Read through the code if you want to learn the semantics of how this works.
 
 Dependencies:
+* my puppet-common module (optional)
 * my puppet-puppet module (optional)
 
 

@@ -167,19 +167,34 @@ define runonce::timer(
 	$command = '/bin/true',
 	$delta = 3600,				# seconds to wait...
 	$notify = undef,
-	$repeat_on_failure = true
+	$repeat_on_failure = true,
+	$again = true				# use a timed Exec['again']
 ) {
 	include runonce::timer::base
 	include runonce::vardir
+	if $again {
+		include common::again
+	}
+
 	#$vardir = $::runonce::vardir::module_vardir	# with trailing slash
 	$vardir = regsubst($::runonce::vardir::module_vardir, '\/$', '')
 
 	# start the timer...
 	exec { "/bin/date > ${vardir}/start/${name}":
 		creates => "${vardir}/start/${name}",	# run once
-		notify => Exec["runonce-timer-${name}"],
+		notify => [
+			Exec["runonce-timer-${name}"],
+			Common::Again::Delta["runonce-timer-${name}"],	# magic
+		],
 		require => File["${vardir}/start/"],
 		alias => "runonce-start-${name}",
+	}
+
+	if $again {
+		# this will cause puppet to run again after this delta is up...
+		common::again::delta { "runonce-timer-${name}":
+			delta => $delta,
+		}
 	}
 
 	$date = "/bin/date >> ${vardir}/timer/${name}"
