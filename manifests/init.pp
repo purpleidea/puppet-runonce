@@ -161,6 +161,8 @@ class runonce::timer::base {
 # saved. every time puppet runs (usually every 30 minutes) it compares the
 # timestamp to the current time, and if this difference exceeds that of the
 # set delta, then the requested command is executed.
+# TODO: add a type to "reset" the timer
+# TODO: modify the timer to either start on first run, or start on notify
 # FIXME: Warning: notify is a metaparam; this value will inherit to all
 # contained resources in the runonce::timer definition
 define runonce::timer(
